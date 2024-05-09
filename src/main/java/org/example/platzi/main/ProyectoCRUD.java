@@ -4,6 +4,7 @@ import org.example.platzi.model.Employee;
 import org.example.platzi.repository.EmployeeRepository;
 import org.example.platzi.repository.Repository;
 import org.example.platzi.util.DataBaseConnection;
+import org.example.platzi.util.DataBaseConnectionPool;
 
 import java.net.ResponseCache;
 import java.sql.*;
@@ -24,18 +25,27 @@ public class ProyectoCRUD {
                     connection
             );
 
-            repository.findAll().forEach(System.out::println);
+            Repository<Employee> repositoryTwo = new EmployeeRepository();
 
+
+            repositoryTwo.findAll().forEach(System.out::println);
+            repositoryTwo.findAll().forEach(System.out::println);
+            repositoryTwo.findAll().forEach(System.out::println);
+            repositoryTwo.findAll().forEach(System.out::println);
+            repositoryTwo.findAll().forEach(System.out::println);
+            repositoryTwo.findAll().forEach(System.out::println);
+            //repository.findAll().forEach(System.out::println);
+            System.out.println("conexion" + EmployeeRepository.map.get(DataBaseConnectionPool.getConnetion()));
             //insertar un nuevo
-            Employee e = new Employee();
-            e.setFirst_name("paul");
-            e.setPs_surname("cortes");
-            e.setMa_surname("quijano");
-            e.setSalary(25000.0f);
-            e.setEmail("pcorquidev@gmail.com");
-            e.setCurp("abc12345890abcdefb");
-            repository.save(e);
-            connection.commit();
+//            Employee e = new Employee();
+//            e.setFirst_name("paul");
+//            e.setPs_surname("cortes");
+//            e.setMa_surname("quijano");
+//            e.setSalary(25000.0f);
+//            e.setEmail("pcorquidev@gmail.com");
+//            e.setCurp("abc12345890abcdefb");
+//            repository.save(e);
+//            connection.commit();
 
         }catch (SQLException sqlException){
             connection.rollback();

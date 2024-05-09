@@ -1,24 +1,39 @@
 package org.example.platzi.repository;
 
 import org.example.platzi.model.Employee;
+import org.example.platzi.model.cerrar;
 import org.example.platzi.util.DataBaseConnection;
+import org.example.platzi.util.DataBaseConnectionPool;
 
 import javax.xml.transform.Result;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class EmployeeRepository implements Repository<Employee> {
 
+    public static Map<Connection, String> map = new HashMap<>();
+
     private Connection myConn;
 
-    public EmployeeRepository(Connection connection){
+    private Connection connection = getConnectionPool();
+
+    public EmployeeRepository(Connection connection) throws SQLException {
         this.myConn = connection;
     }
 
+    public EmployeeRepository() throws SQLException {}
+
     //singleton para obtener la conexion
-    private Connection getConnection() throws SQLException{
+    public static Connection getConnection() throws SQLException{
         return DataBaseConnection.getConnection();
+    }
+
+    //
+    private Connection getConnectionPool() throws SQLException {
+        return DataBaseConnectionPool.getConnetion();
     }
 
     @Override
@@ -26,10 +41,12 @@ public class EmployeeRepository implements Repository<Employee> {
 
         List<Employee> employees = new ArrayList<>();
         try(
-                Statement statement = myConn.createStatement();
-                ResultSet myRes = statement.executeQuery("SELECT * FROM employees")) {
-            ;
+                Connection connection = getConnectionPool();
+                Statement statement = connection.createStatement();
 
+                ResultSet myRes = statement.executeQuery("SELECT * FROM employees")) {
+
+            //map.put(connection, Math.random() + "");
             while (myRes.next()) {
 
                 Employee e = createEmployee(myRes);
