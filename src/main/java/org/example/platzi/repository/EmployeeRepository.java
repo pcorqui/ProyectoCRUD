@@ -10,6 +10,12 @@ import java.util.List;
 
 public class EmployeeRepository implements Repository<Employee> {
 
+    private Connection myConn;
+
+    public EmployeeRepository(Connection connection){
+        this.myConn = connection;
+    }
+
     //singleton para obtener la conexion
     private Connection getConnection() throws SQLException{
         return DataBaseConnection.getConnection();
@@ -20,7 +26,7 @@ public class EmployeeRepository implements Repository<Employee> {
 
         List<Employee> employees = new ArrayList<>();
         try(
-                Statement statement = getConnection().createStatement();
+                Statement statement = myConn.createStatement();
                 ResultSet myRes = statement.executeQuery("SELECT * FROM employees")) {
             ;
 
@@ -47,7 +53,7 @@ public class EmployeeRepository implements Repository<Employee> {
     @Override
     public Employee getById(Integer id) throws SQLException {
         Employee employee = null;
-        try(PreparedStatement preparedStatement = getConnection()
+        try(PreparedStatement preparedStatement = myConn
                 .prepareStatement("SELECT * FROM employees where id = ?")
                 ){
             preparedStatement.setInt(1,id);
@@ -63,12 +69,33 @@ public class EmployeeRepository implements Repository<Employee> {
     }
 
     @Override
-    public void save(Employee employee) {
+    public void save(Employee employee) throws SQLException {
 
+        try(PreparedStatement preparedStatement = myConn.prepareStatement(
+
+                "INSERT INTO employees(first_name,pa_surname,ma_surname,email,salary, curp) values(?,?,?,?,?,?)")){
+
+            createEmployee(preparedStatement, employee);
+
+             preparedStatement.executeUpdate();
+        }
+    }
+
+    private static void createEmployee(PreparedStatement preparedStatement, Employee e) throws SQLException {
+        preparedStatement.setString(1,e.getFirst_name());
+        preparedStatement.setString(2,e.getMa_surname());
+        preparedStatement.setString(3,e.getPs_surname());
+        preparedStatement.setString(4,e.getEmail());
+        preparedStatement.setFloat(5,e.getSalary());
+        preparedStatement.setString(6,e.getCurp());
+        //preparedStatement.setString(6,e.getEmail());
     }
 
     @Override
-    public void delete(Integer id) {
-
+    public void delete(Integer id) throws SQLException {
+        try(
+                Statement statement = myConn.createStatement()){
+            statement.execute("DELETE FROM employees WHERE id = " + id);
+        }
     }
 }
